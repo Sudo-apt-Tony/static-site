@@ -72,7 +72,7 @@ class TestParentNode(unittest.TestCase):
         for tag, children, props, expected in test_cases:
             if children is None or not tag:
                 with self.assertRaises(ValueError):
-                    ParentNode(tag, children, props).to_html()
+                    ParentNode(tag, children, props).to_html()  # pyright: ignore[reportArgumentType]
             else:
                 node = ParentNode(tag, children, props)
                 self.assertEqual(node.to_html(), expected)

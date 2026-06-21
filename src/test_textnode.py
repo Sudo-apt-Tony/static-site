@@ -1,6 +1,7 @@
 import unittest
 
-from textnode import TextNode, TextType
+from htmlnode import LeafNode
+from textnode import TextNode, TextType, text_node_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -31,6 +32,35 @@ class TestTextNode(unittest.TestCase):
         )
 
         self.assertEqual(repr(node7), "TextNode(This is a text node, text, None)")
+
+    def test_text(self):
+        test_cases = [
+            ("foo", TextType.TEXT, None, LeafNode(None, "foo")),  # TEXT
+            ("bar", TextType.BOLD, None, LeafNode("b", "bar")),  # BOLD
+            (
+                "fizz",
+                TextType.LINK,
+                "https://www.github.com",
+                LeafNode("a", "fizz", {"href": "https://www.github.com"}),
+            ),  # LINK
+            (
+                "Image",
+                TextType.IMAGE,
+                "https://www.imgur.com",
+                LeafNode("img", "", {"src": "https://www.imgur.com", "alt": "Image"}),
+            ),  # IMG
+            (None, None, None, None),  # Exception
+        ]
+
+        for text, text_type, url, expected in test_cases:
+            if expected is None:
+                with self.assertRaises(Exception):
+                    text_node_to_html_node(TextNode(text, text_type, url))
+                continue
+            self.assertEqual(
+                text_node_to_html_node(TextNode(text, text_type, url)).value,
+                expected.value,
+            )
 
 
 if __name__ == "__main__":
